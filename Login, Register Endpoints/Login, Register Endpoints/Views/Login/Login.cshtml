@@ -1,0 +1,30 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Login";
+    @model LoginViewModel
+
+    <link rel="stylesheet" href="C:\Users\matej\OneDrive\Desktop\Log in,Register - New Project\Login, Register Endpoints\Login, Register Endpoints\wwwroot\/css/register,login.css">
+    <script src="C:\Users\matej\OneDrive\Desktop\Log in,Register - New Project\Login, Register Endpoints\Login, Register Endpoints\wwwroot\/js/login,register.js"></script>
+}
+
+<div class="container">
+    <h1 class="page-header text-center">Login & Register</h1>
+    <div class="row">
+        <div id="left-sq" class="col-md-6 squircles">
+            <div class="squircle-content">
+                <h3>Login</h3>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email:</label>
+                        <input type="email" id="login-email" class="form-control border-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password:</label>
+                        <input type="password" id="login-password" class="form-control border-input" required>
+                    </div>
+                    <button id="login-btn" type="submit" class="btn btn-success btn-fill">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

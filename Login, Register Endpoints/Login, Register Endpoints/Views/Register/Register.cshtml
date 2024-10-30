@@ -1,0 +1,35 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Register";
+    @model RegisterViewModel
+
+    <script src="C:\Users\matej\OneDrive\Desktop\Log in,Register - New Project\Login, Register Endpoints\Login, Register Endpoints\wwwroot\/js/login,register.js"></script>
+    <link rel="stylesheet" href="~C:\Users\matej\OneDrive\Desktop\Log in,Register - New Project\Login, Register Endpoints\Login, Register Endpoints\wwwroot\/css/register.login.css">
+}
+
+<div class="squircle-content">
+    <h3>Register</h3>
+    <form id="signup-form">
+        <div class="form-group">
+            <label for="signup-email">Email:</label>
+            <input type="email" id="signup-email" class="form-control border-input" required>
+        </div>
+        <div class="form-group">
+            <label for="signup-password">Password:</label>
+            <input type="password" id="signup-password" class="form-control border-input" required>
+        </div>
+        <div class="form-group">
+            <label for="signup-balance">Initial Balance:</label>
+            <input type="number" id="signup-balance" class="form-control border-input" required>
+        </div>
+        <div class="form-group form-check">
+            <input type="checkbox" id="signup-terms" class="form-check-input">
+            <label for="signup-terms" class="form-check-label">Accept Terms and Conditions</label>
+        </div>
+        <div class="form-group form-check">
+            <input type="checkbox" id="signup-newsletter" class="form-check-input">
+            <label for="signup-newsletter" class="form-check-label">Subscribe to Newsletter</label>
+        </div>
+        <button id="register-btn" type="submit" class="btn btn-info btn-fill">Register</button>
+    </form>
+</div>
