@@ -1,0 +1,40 @@
+﻿@model IEnumerable<CryptoSphereStats.Domain.Models.ChartData>
+
+
+@{
+    ViewData["Title"] = "Data";
+}
+
+<h2>All Cryptocurrencies</h2>
+
+
+<div>
+    <form method="get" asp-controller="Data" asp-action="GetAllCryptocurrencies">
+        <button type="submit" class="btn btn-primary">View All Cryptocurrencies</button>
+    </form>
+    <form method="get" asp-controller="Data" asp-action="GetAllChartData">
+        <button type="submit" class="btn btn-secondary">View All Chart Data</button>
+    </form>
+    <form method="get" asp-controller="Data" asp-action="GetAllData">
+        <button type="submit" class="btn btn-success">View All Data (JSON)</button>
+    </form>
+</div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Id</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var crypto in Model)
+        {
+            <tr>
+                <td>@crypto.Name</td>
+                <td>@crypto.Id</td>
+            </tr>
+        }
+    </tbody>
+</table>
