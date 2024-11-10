@@ -1,0 +1,195 @@
+﻿@{
+    ViewData["Title"] = "CryptoSphere Statistics";
+    Layout = "_Layout"; 
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" />
+    <link href="~/css/stats.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid" style="margin-top: 80px;">
+        <main class="main-content">
+            <div class="container">
+                <h1 class="page-header text-center">@ViewData["Title"]</h1>
+
+
+                @* < Dropdown cryptocurrency *@
+
+                <label for="cryptoSelector" class="visually-hidden">Select a cryptocurrency:</label>
+                <select id="cryptoSelector" aria-label="Select a cryptocurrency"></select>
+
+                <canvas id="cryptoChart" width="200" height="100"></canvas>
+
+                @section Scripts {
+                    <script>
+                
+                        let myChart = null;
+
+                        const monthNames = [
+                            "January", "February", "March", "April", "May", "June",
+                            "July", "August", "September", "October", "November", "December"
+                        ];
+
+                        // Function to fetchCryptocurrencies
+                        const fetchCryptocurrencies = () => {
+                            fetch('/api/chartdata/cryptocurrencies')
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(cryptos => {
+                                    const cryptoSelector = document.getElementById('cryptoSelector');
+                                    cryptoSelector.innerHTML = '';
+
+                                    // no cryptocurrencies
+                                    if (cryptos.length === 0) {
+                                        const option = document.createElement('option');
+                                        option.textContent = 'No cryptocurrencies available';
+                                        option.disabled = true;
+                                        cryptoSelector.appendChild(option);
+                                    } else {
+                                        // Populate
+                                        cryptos.forEach(crypto => {
+                                            const option = document.createElement('option');
+                                            option.value = crypto.name;
+                                            option.textContent = crypto.name;
+                                            cryptoSelector.appendChild(option);
+                                        });
+
+                                        // Fetch initial
+                                        fetchChartData(cryptos[0].name);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching cryptocurrencies:', error);
+                                    alert('Failed to load cryptocurrencies.');
+                                });
+                        };
+
+                        // Function to fetch
+                        const fetchChartData = (cryptocurrencyName) => {
+                            fetch(`/api/chartdata/chartdata/${cryptocurrencyName}`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(chartData => {
+                                    if (chartData && chartData.length > 0) {
+                                        chartData.sort((a, b) => a.month - b.month);
+
+                                        const labels = chartData.map(data => monthNames[data.month - 1]);
+                                        const values = chartData.map(data => data.value);
+
+                                        // context and destroy
+                                        const ctx = document.getElementById('cryptoChart').getContext('2d');
+
+                                    
+                                        if (myChart) {
+                                            myChart.destroy();
+                                        }
+
+                                        // Create a new chart
+                                        myChart = new Chart(ctx, {
+                                            type: 'line',
+                                            data: {
+                                                labels: labels,
+                                                datasets: [{
+                                                    label: `${cryptocurrencyName} Value`,
+                                                    data: values,
+                                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                                    borderWidth: 1,
+                                                    fill: true
+                                                }]
+                                            },
+                                            options: {
+                                                responsive: true,
+                                                scales: {
+                                                    x: {
+                                                        title: {
+                                                            display: true,
+                                                            text: 'Month'
+                                                        },
+                                                        ticks: {
+                                                            autoSkip: true,
+                                                            maxTicksLimit: 12
+                                                        }
+                                                    },
+                                                    y: {
+                                                        beginAtZero: true,
+                                                        title: {
+                                                            display: true,
+                                                            text: 'Value'
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        console.error("No data available for chart rendering.");
+                                        alert("No chart data available for the selected cryptocurrency.");
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching chart data:', error);
+                                    alert('Failed to load chart data.');
+                                });
+                        };
+
+                        // Initialize
+                        document.addEventListener('DOMContentLoaded', function () {
+                            fetchCryptocurrencies();
+                        });
+
+                        // dropdown selection
+                        document.getElementById('cryptoSelector').addEventListener('change', (event) => {
+                            const selectedCrypto = event.target.value;
+                            fetchChartData(selectedCrypto);
+                        });
+
+                    </script>
+                }
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="footer-content">
+            <nav aria-label="Footer Links">
+                <div class="footer-links">
+                    <a href="@Url.Action("Index", "Home")">Home</a>
+                    <a href="@Url.Action("Index", "Info")">Information Center</a>
+                    <a href="@Url.Action("Index", "Stats")">Statistics</a>
+                    <a href="@Url.Action("Index", "Simulator")">Simulator</a>
+                </div>
+            </nav>
+            <div class="social-icons">
+                <p id="contact-txt">Contact</p>
+                <a href="#"><img src="~/media/facebook-logo-white.png" alt="Facebook" /></a>
+                <a href="#"><img src="~/media/X_logo_2023_(white).png" alt="X" /></a>
+                <a href="#"><img src="~/media/CITYPNG.COMHD-White-Instagram-Round-Logo-Icon-PNG-1600x1200-1.png" alt="Instagram" /></a>
+                <a href="#"><img src="~/media/linkedin-icon-1024x1024-k39l5ziu.png" alt="LinkedIn" /></a>
+            </div>
+        </div>
+        <p id="copyright">© 2024 Qinshift Academy. All rights reserved.</p>
+    </footer>
+
+    
+</body>
+</html>

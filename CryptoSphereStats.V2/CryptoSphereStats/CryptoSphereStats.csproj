@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\media\CITYPNG.COMHD-White-Instagram-Round-Logo-Icon-PNG-1600x1200-1.png" />
+    <Content Remove="wwwroot\media\facebook-logo-white.png" />
+    <Content Remove="wwwroot\media\linkedin-icon-1024x1024-k39l5ziu.png" />
+    <Content Remove="wwwroot\media\logo-crypto.png" />
+    <Content Remove="wwwroot\media\X_logo_2023_(white).png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\Shared\footer\index.html" />
+    <Content Include="Views\Shared\footer\style.css" />
+    <Content Include="Views\Shared\nav\index.html" />
+    <Content Include="Views\Shared\nav\script.js" />
+    <Content Include="Views\Shared\nav\style.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\media\CITYPNG.COMHD-White-Instagram-Round-Logo-Icon-PNG-1600x1200-1.png" />
+    <None Include="wwwroot\media\facebook-logo-white.png" />
+    <None Include="wwwroot\media\linkedin-icon-1024x1024-k39l5ziu.png" />
+    <None Include="wwwroot\media\logo-crypto.png" />
+    <None Include="wwwroot\media\X_logo_2023_(white).png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Chart.js" Version="3.7.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.20" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.20">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.20" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.20">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CryptoSphereStats.DataAccess\CryptoSphereStats.DataAccess.csproj" />
+    <ProjectReference Include="..\CryptoSphereStats.Models\CryptoSphereStats.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
