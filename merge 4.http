@@ -1,0 +1,6 @@
+@merge_4_HostAddress = http://localhost:5285
+
+GET {{merge_4_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
