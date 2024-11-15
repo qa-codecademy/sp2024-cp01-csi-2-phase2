@@ -6,8 +6,8 @@ namespace CryptoWalletAPI.Services
 {
     public interface IUserService
     {
-        Result Register(UserRegisterDTO dto);
-        User Authenticate(UserLoginDTO dto);
+        Task<Result> Register(UserRegisterDTO dto);
+        Task<Result> Authenticate(UserLoginDTO dto);
     }
 
 }

@@ -2,17 +2,26 @@
 {
     public class Result
     {
-        public bool IsSuccess { get; }
-        public string ErrorMessage { get; }
+        public bool IsSuccess { get; set; } = false;
+        public IEnumerable<string> ErrorMessage { get; protected set; } = new List<string>();
 
-        private Result(bool isSuccess, string errorMessage = null)
+        public static Result Success => new(true);
+        public Result(params string[] errors) => ErrorMessage = errors;
+        public Result(IEnumerable<string> errors) => ErrorMessage = errors;
+
+        public Result(bool IsSuccess) => IsSuccess = IsSuccess;
+    }
+
+    public class Result<TResult> : Result where TResult : new()
+    {
+        public TResult? Outcome { get; set; }
+        public Result(TResult? outcome)
         {
-            IsSuccess = isSuccess;
-            ErrorMessage = errorMessage;
+            IsSuccess = true;
+            Outcome = outcome;
         }
-
-        public static Result Success() => new Result(true);
-        public static Result Failure(string errorMessage) => new Result(false, errorMessage);
+        public Result (params string[] errors) : base(errors) { }   
+        public Result(IEnumerable<string> errors): base(errors) { }
     }
 
 }

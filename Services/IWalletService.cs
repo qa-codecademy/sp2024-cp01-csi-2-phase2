@@ -7,11 +7,10 @@ namespace CryptoWalletAPI.Services
 {
     public interface IWalletService
     {
-        Wallet GetWallet(int userId);
-        Result AddCrypto(CryptoTransactionDTO dto, int userId);
-        Result BuyCrypto(CryptoTransactionDTO dto, int userId);
-        Result SellCrypto(CryptoTransactionDTO dto, int userId);
-        Result SendCrypto(SendCryptoDTO dto, int senderId);
-        Task<decimal> GetCryptoPrice(string symbol);
+        Task<Result<Wallet>> GetWallet(int userId);
+        Task<Result> BuyCrypto(CryptoTransactionDTO dto, int userId);
+        Task<Result>  SellCrypto(CryptoTransactionDTO dto, int userId);
+        Task<Result> SendCrypto(SendCryptoDTO dto,int receiverId, int senderId);
+        Task<Result<decimal>> GetCryptoPrice(string symbol);
     }
 }

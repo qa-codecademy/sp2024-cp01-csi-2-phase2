@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using CryptoWalletAPI.DTOs;
 using CryptoWalletAPI.Helpers;
 using CryptoWalletAPI.Services;
+using CryptoWalletAPI.Controllers;
+using CryptoWalletAPI.Models;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : ControllerBase
+public class AuthController : BaseController
 {
     private readonly IUserService _userService;
     private readonly JwtHelper _jwtHelper;
@@ -19,21 +21,39 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public IActionResult Register(UserRegisterDTO registerDto)
+    public async Task<IActionResult> Register([FromBody]UserRegisterDTO registerDto)
     {
-        var result = _userService.Register(registerDto);
-        return result.IsSuccess
-            ? Ok(new { message = "User registered successfully", status = "success" })
-            : BadRequest(new { message = result.ErrorMessage });
+        try
+        {
+            var response = await _userService.Register(registerDto);
+            return Response(response);
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+        
     }
 
     [HttpPost("login")]
-    public IActionResult Login(UserLoginDTO loginDto)
+    public async Task<IActionResult> Login(UserLoginDTO loginDto)
     {
-        var user = _userService.Authenticate(loginDto);
-        if (user == null) return Unauthorized(new { message = "Invalid credentials" });
+        try
+        {
+            var response = await _userService.Authenticate(loginDto);
+            if (response == null) return BadRequest(response.ErrorMessage.ToString());
 
-        var token = _jwtHelper.GenerateJwtToken(user);
-        return Ok(new { message = "Login successful", token = token, status = "success" });
+            var user = new User
+            {
+                Email = loginDto.Email,
+                PasswordHash = loginDto.Password
+            };
+            var token = _jwtHelper.GenerateJwtToken(user);
+            return Ok(token);
+        }
+        catch (Exception ex) 
+        {
+            throw new Exception(ex.Message);
+        }
     }
 }

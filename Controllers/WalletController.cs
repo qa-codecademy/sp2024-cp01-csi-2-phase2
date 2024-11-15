@@ -3,80 +3,128 @@ using Microsoft.AspNetCore.Authorization;
 using CryptoWalletAPI.DTOs;
 using CryptoWalletAPI.Services;
 using System.Threading.Tasks;
+using System.Security.Claims;
+using CryptoWalletAPI.Data;
+using Microsoft.EntityFrameworkCore;
+using CryptoWalletAPI.Controllers;
+using CryptoWalletAPI.Helpers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class WalletController : ControllerBase
+public class WalletController : BaseController
 {
     private readonly IWalletService _walletService;
+    private readonly CryptoWalletContext _context;
 
-    public WalletController(IWalletService walletService)
+    public WalletController(IWalletService walletService, CryptoWalletContext context)
     {
         _walletService = walletService;
+        _context = context;
     }
 
-    private int GetUserId()
-    {
-        if (HttpContext.User.FindFirst("userId")?.Value is string userIdStr && int.TryParse(userIdStr, out int userId))
-        {
-            return userId;
-        }
-        throw new UnauthorizedAccessException("User is not authenticated.");
-    }
 
     [HttpGet]
-    public IActionResult GetWallet()
+    public async Task<IActionResult> GetWallet()
     {
-        var userId = GetUserId();
-        var wallet = _walletService.GetWallet(userId);
-        return Ok(wallet);
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null)
+                return BadRequest("No user identified");
+            var findUser = await _context.Users.FirstOrDefaultAsync(x => x.Email == userIdClaim);
+            var userId = findUser.Id;
+            var wallet = await _walletService.GetWallet(userId);
+            return Ok(wallet);
+        }
+        catch(Exception ex)
+        { throw new Exception(ex.Message);
+        }
     }
 
-    [HttpPost("add-crypto")]
-    public IActionResult AddCrypto(CryptoTransactionDTO transactionDto)
+    [HttpPost("buy-crypto")]
+    public async Task<IActionResult> BuyCrypto(CryptoTransactionDTO transactionDto)
     {
-        var userId = GetUserId();
-        var result = _walletService.AddCrypto(transactionDto, userId);
-        return result.IsSuccess
-            ? Ok(new { message = "Cryptocurrency added successfully", status = "success" })
-            : BadRequest(new { message = result.ErrorMessage });
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null)
+                return BadRequest("No user identified");
+            var findUser = await _context.Users.FirstOrDefaultAsync(x => x.Email == userIdClaim);
+            var userId = findUser.Id;
+            var result = await _walletService.BuyCrypto(transactionDto, userId);
+
+            return result.IsSuccess
+                ? Ok(new { message = "Cryptocurrency bought successfully", status = "success" })
+                : BadRequest(new { message = result.ErrorMessage });
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
     }
 
-    [HttpPost("buy")]
-    public IActionResult BuyCrypto(CryptoTransactionDTO transactionDto)
+    [HttpPost("sell-crypto")]
+    public async Task<IActionResult> SellCrypto(CryptoTransactionDTO transactionDto)
     {
-        var userId = GetUserId();
-        var result = _walletService.BuyCrypto(transactionDto, userId);
-        return result.IsSuccess
-            ? Ok(new { message = "Cryptocurrency bought successfully", status = "success" })
-            : BadRequest(new { message = result.ErrorMessage });
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null)
+                return BadRequest("No user identified");
+            var findUser = await _context.Users.FirstOrDefaultAsync(x => x.Email == userIdClaim);
+            var userId = findUser.Id;
+            var result = await _walletService.SellCrypto(transactionDto, userId);
+
+            return result.IsSuccess
+                    ? Ok(new { message = "Cryptocurrency sold successfully", status = "success" })
+                    : BadRequest(new { message = result.ErrorMessage });
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
     }
 
-    [HttpPost("sell")]
-    public IActionResult SellCrypto(CryptoTransactionDTO transactionDto)
+    [HttpPost("send-crypto")]
+    public async Task<IActionResult> SendCrypto([FromBody]SendCryptoDTO sendDto)
     {
-        var userId = GetUserId();
-        var result = _walletService.SellCrypto(transactionDto, userId);
-        return result.IsSuccess
-            ? Ok(new { message = "Cryptocurrency sold successfully", status = "success" })
-            : BadRequest(new { message = result.ErrorMessage });
-    }
+        try
+        {
+            //Find users id
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null)
+                return BadRequest("No user identified");
+            var findUser = await _context.Users.FirstOrDefaultAsync(x => x.Email == userIdClaim);
+            var senderId = findUser.Id;
 
-    [HttpPost("send")]
-    public IActionResult SendCrypto(SendCryptoDTO sendDto)
-    {
-        var senderId = GetUserId();
-        var result = _walletService.SendCrypto(sendDto, senderId);
-        return result.IsSuccess
-            ? Ok(new { message = "Cryptocurrency sent successfully", status = "success" })
-            : BadRequest(new { message = result.ErrorMessage });
+            //find the id of Receiver through inputted email
+            var findReceiver = await _context.Users.FirstOrDefaultAsync(x => x.Email == sendDto.RecipientEmail);
+            var receiverId = findReceiver.Id;
+
+            var result = await _walletService.SendCrypto(sendDto, receiverId, senderId);
+            return result.IsSuccess
+                ? Ok(new { message = "Cryptocurrency sent successfully", status = "success" })
+                : BadRequest(new { message = result.ErrorMessage });
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
     }
 
     [HttpGet("crypto-price/{symbol}")]
     public async Task<IActionResult> GetCryptoPrice(string symbol)
     {
-        var price = await _walletService.GetCryptoPrice(symbol);
-        return Ok(new { symbol, price });
+        try
+        {
+            var price = await _walletService.GetCryptoPrice(symbol);
+            return Ok(new { symbol, price });
+        }
+        catch(Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
     }
+
 }
