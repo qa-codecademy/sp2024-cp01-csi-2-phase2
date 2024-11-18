@@ -12,5 +12,6 @@ namespace CryptoWalletAPI.Services
         Task<Result>  SellCrypto(CryptoTransactionDTO dto, int userId);
         Task<Result> SendCrypto(SendCryptoDTO dto,int receiverId, int senderId);
         Task<Result<decimal>> GetCryptoPrice(string symbol);
+        Task<Result> CryptoToCrypto(CryptoToCryptoDTO dto,int userId);
     }
 }

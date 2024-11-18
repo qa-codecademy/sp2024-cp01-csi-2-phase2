@@ -3,7 +3,7 @@
     public class Result
     {
         public bool IsSuccess { get; set; } = false;
-        public IEnumerable<string> ErrorMessage { get; protected set; } = new List<string>();
+        public IEnumerable<string> ErrorMessage { get;  set; } = new List<string>();
 
         public static Result Success => new(true);
         public Result(params string[] errors) => ErrorMessage = errors;

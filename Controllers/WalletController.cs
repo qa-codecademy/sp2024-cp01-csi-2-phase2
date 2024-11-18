@@ -127,4 +127,19 @@ public class WalletController : BaseController
         }
     }
 
+    [HttpPost("exchange-crypto")]
+    public async Task<IActionResult> ExchangeCrypto (CryptoToCryptoDTO dto)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null)
+            return BadRequest("No user identified");
+        var findUser = await _context.Users.FirstOrDefaultAsync(x => x.Email == userIdClaim);
+        var userId = findUser.Id;
+
+        var result = await _walletService.CryptoToCrypto(dto, userId);
+        return result.IsSuccess
+            ? Ok(new { message = "Cryptocurrency exchanged successfully", status = "success" })
+            : BadRequest(new { message = result.ErrorMessage });
+    }
+
 }

@@ -4,6 +4,7 @@ using CryptoWalletAPI.Helpers;
 using CryptoWalletAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 
 
 namespace CryptoWalletAPI.Services
@@ -40,13 +41,13 @@ namespace CryptoWalletAPI.Services
                     {
                         Symbol = dto.Symbol,
                         Amount = dto.Amount,
-                        ValueUSD = dto.Amount * cryptoValue
+                        ValueUSD = cryptoValue
                     });
                 }
                 else
                 {
                     holding.Amount += dto.Amount;
-                    holding.ValueUSD += holding.Amount * cryptoValue;
+                    holding.ValueUSD += cryptoValue;
                 }
 
                 await _context.SaveChangesAsync();
@@ -58,23 +59,123 @@ namespace CryptoWalletAPI.Services
             }
         }
 
+        public async Task<Result> CryptoToCrypto(CryptoToCryptoDTO dto, int userId)
+        {
+            if (string.IsNullOrEmpty(dto.CryptoHolding))
+            {
+                return new Result("You must enter a crypto coin that you own");
+            }
+
+            if (string.IsNullOrEmpty(dto.ExchangeCrypto))
+            {
+                return new Result("You must enter a crypto symbol you want to exchange with!");
+            }
+
+            var wallet = await _context.Wallets
+                .Include(w => w.Cryptos)
+                .FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (wallet == null)
+            {
+                return new Result<Wallet>("No wallet found!") { IsSuccess = false };
+            }
+
+            var userHolding = wallet.Cryptos.FirstOrDefault(c => c.Symbol == dto.CryptoHolding);
+
+            if (userHolding is null)
+            {
+                return new Result("You don't own that crypto coin!");
+            }
+
+            var holdingValueInUSD = userHolding.ValueUSD * dto.HoldingAmount;
+
+            var exchangeCryptoPriceResult = await GetCryptoPrice(dto.ExchangeCrypto);
+            if (!exchangeCryptoPriceResult.IsSuccess)
+            {
+                return new Result("Failed to fetch the price for the exchange cryptocurrency.");
+            }
+
+            var exchangeCryptoValueInUSD = exchangeCryptoPriceResult.Outcome;
+
+            if (holdingValueInUSD < exchangeCryptoValueInUSD * dto.HoldingAmount)
+            {
+                return new Result($"Insufficient {userHolding.Symbol} to exchange with {dto.ExchangeCrypto}");
+            }
+
+            var exchangedAmount = holdingValueInUSD / exchangeCryptoValueInUSD;
+
+            wallet.Cryptos.Remove(userHolding);
+
+            wallet.Cryptos.Add(new CryptoHoldings
+            {
+                Symbol = dto.ExchangeCrypto,
+                Amount = exchangedAmount,
+                ValueUSD = exchangeCryptoValueInUSD
+            });
+
+            await _context.SaveChangesAsync();
+
+            return new Result("Crypto exchange successful!") { IsSuccess = true };
+        }
+
+
         public async Task<Result<decimal>> GetCryptoPrice(string symbol)
         {
             try
             {
                 var response = await _httpClient.GetAsync("https://api.coinlore.net/api/tickers/");
-                if (!response.IsSuccessStatusCode) return new Result<decimal>(0m);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new Result<decimal>(0m)
+                    {
+                        IsSuccess = false,
+                        ErrorMessage = new List<string> { "Failed to fetch data from the API." }
+                    };
+                }
 
                 var content = await response.Content.ReadAsStringAsync();
+
+                // Parse the response assuming "data" is an array
                 var json = JObject.Parse(content);
                 var crypto = json["data"]?.FirstOrDefault(c => c["symbol"]?.ToString() == symbol);
-                return new Result<decimal>(crypto != null ? decimal.Parse(crypto["price_usd"]?.ToString() ?? "0") : 0m);
+
+                if (crypto == null)
+                {
+                    return new Result<decimal>(0m)
+                    {
+                        IsSuccess = false,
+                        ErrorMessage = new List<string> { "Symbol not found in API data." }
+                    };
+                }
+
+                // Parse price_usd as decimal
+                if (decimal.TryParse(crypto["price_usd"]?.ToString(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var priceUsd))
+                {
+                    return new Result<decimal>(priceUsd)
+                    {
+                        IsSuccess = true
+                    };
+                }
+                else
+                {
+                    return new Result<decimal>(0m)
+                    {
+                        IsSuccess = false,
+                        ErrorMessage = new List<string> { "Invalid price format in API data." }
+                    };
+                }
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                return new Result<decimal>(0m)
+                {
+                    IsSuccess = false,
+                    ErrorMessage = new List<string> { $"Error: {ex.Message}" }
+                };
             }
+
         }
+
 
         public async Task<Result<Wallet>> GetWallet(int userId)
         {
@@ -117,7 +218,7 @@ namespace CryptoWalletAPI.Services
 
                 wallet.BalanceUSD += totalSale;
                 holding.Amount -= dto.Amount;
-                holding.ValueUSD -= totalSale;
+                holding.ValueUSD = cryptoPrice.Outcome;
 
                 if (holding.Amount == 0) wallet.Cryptos.Remove(holding);
 
@@ -160,7 +261,7 @@ namespace CryptoWalletAPI.Services
                 if (receiverHoldings != null)
                 {
                     receiverHoldings.Amount += dto.Amount;
-                    receiverHoldings.ValueUSD += transferValue;
+                    receiverHoldings.ValueUSD = cryptoPrice.Outcome;
                 }
                 else
                 {
