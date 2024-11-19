@@ -27,8 +27,4 @@
     <ProjectReference Include="..\CryptoSphereStats.Models\CryptoSphereStats.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

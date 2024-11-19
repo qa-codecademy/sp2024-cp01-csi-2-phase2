@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CryptoSphereStats.DataAccess.Migrations
 {
     [DbContext(typeof(ChartDataContext))]
-    [Migration("20241109210023_initial")]
-    partial class initial
+    [Migration("20241120125116_initiall")]
+    partial class initiall
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

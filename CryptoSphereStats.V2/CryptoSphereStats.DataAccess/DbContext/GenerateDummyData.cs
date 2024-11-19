@@ -7,7 +7,7 @@ using CryptoSphereStats.DataAccess.DataContext;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-//using CryptoSphereStats.Domain.Dtos;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CryptoSphereStats
 {
@@ -62,13 +62,11 @@ namespace CryptoSphereStats
             }
             catch (HttpRequestException ex)
             {
-           
                 Console.WriteLine($"API request failed: {ex.Message}");
                 return Enumerable.Empty<ChartData>();
             }
             catch (Exception ex)
             {
-             
                 Console.WriteLine($"An error occurred: {ex.Message}");
                 return Enumerable.Empty<ChartData>();
             }
@@ -93,7 +91,7 @@ namespace CryptoSphereStats
             return data;
         }
 
-        // store it in the database
+        // store database
         public async Task FetchAndStoreCryptoData()
         {
             var optionsBuilder = new DbContextOptionsBuilder<ChartDataContext>();
@@ -109,5 +107,108 @@ namespace CryptoSphereStats
                 await context.SaveChangesAsync();
             }
         }
+
+
+
+
+
+        //*********************************************************************************NEW
+
+
+
+
+
+
+        // _----------------------------------------------------------------------------------------------------------------------------------------------------
+        //public static async Task<IEnumerable<ChartData>> GenerateDummyChartDataForCrypto(int cryptocurrencyId, string cryptoName, int totalPoints = 12)
+        //{
+        //    var data = new List<ChartData>();
+        //    Random random = new Random();
+
+        //    decimal currentPrice = await GetCurrentCryptoPriceFromApi(cryptocurrencyId);
+        //    decimal startingPrice = currentPrice * (decimal)(random.NextDouble() * 0.2 + 0.9);
+
+        //    decimal price = startingPrice;
+
+        //    for (int i = 0; i < totalPoints; i++)
+        //    {
+
+        //        decimal changePercent = (decimal)(random.NextDouble() * 0.1 - 0.05);
+        //        price = price * (1 + changePercent);
+
+
+        //        price = Math.Max(price, currentPrice * 0.5m);
+
+
+        //        data.Add(new ChartData
+        //        {
+        //            Month = (Month)(i + 1),
+        //            Value = Math.Round(price, 2),
+        //            Name = cryptoName,
+        //            CryptocurrencyId = cryptocurrencyId
+        //        });
+        //    }
+
+
+        //    data[data.Count - 1].Value = Math.Round(currentPrice, 2);
+
+        //    return data;
+        //}
+
+
+        //private static async Task<decimal> GetCurrentCryptoPriceFromApi(int cryptocurrencyId)
+        //{
+        //    try
+        //    {
+
+        //        var url = $"https://api.coinlore.net/api/tickers/?id={cryptocurrencyId}";
+
+
+        //        var response = await client.GetStringAsync(url);
+
+
+        //        var apiResponse = JsonConvert.DeserializeObject<CryptoApiResponse>(response);
+
+
+        //        var cryptoData = apiResponse?.Data?.FirstOrDefault();
+        //        if (cryptoData != null && !string.IsNullOrEmpty(cryptoData.PriceUsd))
+        //        {
+
+        //            if (decimal.TryParse(cryptoData.PriceUsd, System.Globalization.NumberStyles.Any,
+        //                System.Globalization.CultureInfo.InvariantCulture, out decimal price))
+        //            {
+        //                return price;
+        //            }
+        //            else
+        //            {
+        //                Console.WriteLine($"Failed to parse price: {cryptoData.PriceUsd}");
+        //                return 100.00m;
+        //            }
+        //        }
+
+
+        //        return 100.00m;
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        Console.WriteLine($"Failed to fetch real-time price for cryptocurrency {cryptocurrencyId}: {ex.Message}");
+        //        return 100.00m;
+        //    }
+        //}
+
+
+
+
+
+
+
+
+
+
+
+        // _----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
     }
 }

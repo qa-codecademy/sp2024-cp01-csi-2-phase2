@@ -57,22 +57,22 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Initialization
-//await InitializeDatabaseAsync(app);
+//Initialization
+await InitializeDatabaseAsync(app);
 
 app.Run();
 
 
-//async Task InitializeDatabaseAsync(WebApplication app)
-//{
-//    using (var scope = app.Services.CreateScope())
-//    {
-//        var context = scope.ServiceProvider.GetRequiredService<ChartDataContext>();
-//        context.Database.EnsureCreated();
+async Task InitializeDatabaseAsync(WebApplication app)
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ChartDataContext>();
+        context.Database.EnsureCreated();
 
-//        // Fetch and save dummy data
-//        var cryptoData = await GenerateDummyData.FetchCryptoDataAsync(context); 
-//        context.ChartData.AddRange(cryptoData); 
-//        await context.SaveChangesAsync(); 
-//    }
-//}
+        // Fetch and save dummy data
+        var cryptoData = await GenerateDummyData.FetchCryptoDataAsync(context);
+        context.ChartData.AddRange(cryptoData);
+        await context.SaveChangesAsync();
+    }
+}
