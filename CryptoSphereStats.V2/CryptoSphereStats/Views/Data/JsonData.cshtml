@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ﻿@model IEnumerable<CryptoSphereStats.Domain.Models.ChartData>
 
 @{
@@ -8,15 +7,6 @@
 <h2>All Cryptocurrencies and Chart Data</h2>
 
 <!-- Buttons for navigating to other actions -->
-=======
-﻿@{
-    ViewData["Title"] = "Data";
-}
-
-<h2>All Cryptocurrencies</h2>
-
-
->>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c
 <div>
     <form method="get" asp-controller="Data" asp-action="GetAllCryptocurrencies">
         <button type="submit" class="btn btn-primary">View All Cryptocurrencies</button>
@@ -29,7 +19,6 @@
     </form>
 </div>
 
-<<<<<<< HEAD
 <!-- Chart Data Table -->
 <h3>Chart Data</h3>
 
@@ -59,23 +48,3 @@ else
 {
     <p>No chart data available.</p>
 }
-=======
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Id</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var crypto in Model)
-        {
-            <tr>
-                <td>@crypto.Name</td>
-                <td>@crypto.Id</td>
-            </tr>
-        }
-    </tbody>
-</table>
->>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c

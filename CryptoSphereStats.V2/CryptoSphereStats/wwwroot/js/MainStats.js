@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-﻿
-=======
 ﻿document.addEventListener("DOMContentLoaded", function () {
     var toggler = document.querySelector(".navbar-toggler");
     var navbarCollapse = document.querySelector("#navbarNav");
@@ -104,12 +101,13 @@
             });
     }
 
+
     function PopulateTable(array, tableId, page = 1) {
         const table = document.getElementById(tableId);
         table.innerHTML = "";
 
         // Create table headers
-        const headers = ["Name", "Price In USD $", "Last 7 Days"];
+        const headers = ["Name", "Price In USD $", "Last 7 Days", "Trend"];
         const trHeader = document.createElement("tr");
         headers.forEach((headerText, index) => {
             const th = document.createElement("th");
@@ -144,16 +142,36 @@
             rowData.forEach((cellData, index) => {
                 const td = document.createElement("td");
                 td.textContent = cellData;
+
                 if (index === 0) {
                     const th = document.createElement("th");
                     th.setAttribute("scope", "row");
                     th.textContent = cellData;
                     tr.appendChild(th);
                     th.classList.add("tHeaderCrypto");
-                } else {
+                }
+
+                else if (index === 3) {
+                    const canvas = document.createElement("canvas");
+                    canvas.classList.add("cryptoChartCanvas");
+
+                    canvas.width = 200;
+                    canvas.height = 100;
+                    td.appendChild(canvas);
+                    tr.appendChild(td);
+
+                    // Fetch chart data and render it inside the canvas element
+                    //fetchChartData(element.name, canvas);
+                }
+
+
+                else {
                     td.textContent = cellData;
                     tr.appendChild(td);
                 }
+
+
+
                 //>>>> Apply css Negative --- Positive
                 if (parseFloat(element.percent_change_7d) < 0) {
                     td.classList.add("negative");
@@ -163,6 +181,20 @@
                     td.textContent += " ▲";
                 }
             });
+
+
+            tr.addEventListener("click", () => {
+                // Get the clicked cryptocurrency's name
+                const cryptoName = element.name;
+
+                // Store the selected cryptocurrency in localStorage
+                localStorage.setItem("selectedCrypto", cryptoName);
+
+                // Redirect to the desired page
+                window.location.href = `/CryptoStats/CryptoStats`;
+            });
+
+
 
             tbody.appendChild(tr);
         });
@@ -312,4 +344,80 @@
         clearInterval(refreshIntervalId);
     }
 });
->>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c
+
+
+// Function to fetch
+const fetchChartData = (cryptocurrencyName) => {
+    fetch(`/api/StatsAPI/chartdata/${cryptocurrencyName}`)
+        .then(response => {
+
+            console.log('Response Status:', response.status);
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            console.log("Response fetchChartData")
+            return response.json();
+        })
+        .then(chartData => {
+            if (chartData && chartData.length > 0) {
+                chartData.sort((a, b) => a.month - b.month);
+
+                const labels = chartData.map(data => monthNames[data.month - 1]);
+                const values = chartData.map(data => data.value);
+
+                // context and destroy
+                const ctx = document.getElementById('cryptoChart').getContext('2d');
+
+
+                if (myChart) {
+                    myChart.destroy();
+                }
+
+                // Create a new chart
+                myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: `${cryptocurrencyName} Value`,
+                            data: values,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 1,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Month'
+                                },
+                                ticks: {
+                                    autoSkip: true,
+                                    maxTicksLimit: 12
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Value'
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error("No data available for chart rendering.");
+                console.log("No chart data available for the selected cryptocurrency.");
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching chart data:', error);
+            console.log('Failed to load chart data.');
+        });
+};
