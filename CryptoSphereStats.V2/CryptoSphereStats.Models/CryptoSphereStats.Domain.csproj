@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+<<<<<<< HEAD
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+=======
+    <Folder Include="Dtos\" />
+>>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c
   </ItemGroup>
 
 </Project>

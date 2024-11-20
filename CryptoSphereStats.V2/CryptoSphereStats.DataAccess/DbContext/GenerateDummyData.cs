@@ -7,7 +7,11 @@ using CryptoSphereStats.DataAccess.DataContext;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+<<<<<<< HEAD
 using Microsoft.IdentityModel.Tokens;
+=======
+//using CryptoSphereStats.Domain.Dtos;
+>>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c
 
 namespace CryptoSphereStats
 {
@@ -62,11 +66,19 @@ namespace CryptoSphereStats
             }
             catch (HttpRequestException ex)
             {
+<<<<<<< HEAD
+=======
+           
+>>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c
                 Console.WriteLine($"API request failed: {ex.Message}");
                 return Enumerable.Empty<ChartData>();
             }
             catch (Exception ex)
             {
+<<<<<<< HEAD
+=======
+             
+>>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c
                 Console.WriteLine($"An error occurred: {ex.Message}");
                 return Enumerable.Empty<ChartData>();
             }
@@ -91,7 +103,11 @@ namespace CryptoSphereStats
             return data;
         }
 
+<<<<<<< HEAD
         // store database
+=======
+        // store it in the database
+>>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c
         public async Task FetchAndStoreCryptoData()
         {
             var optionsBuilder = new DbContextOptionsBuilder<ChartDataContext>();
@@ -107,6 +123,7 @@ namespace CryptoSphereStats
                 await context.SaveChangesAsync();
             }
         }
+<<<<<<< HEAD
 
 
 
@@ -210,5 +227,7 @@ namespace CryptoSphereStats
         // _----------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+=======
+>>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c
     }
 }

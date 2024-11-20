@@ -278,6 +278,7 @@ th {
 .search {
     background-color: rgba(205, 224, 243, 0.8);
 }
+<<<<<<< HEAD
 
 
 
@@ -286,3 +287,5 @@ table td canvas {
     width: 100%; /* Make the canvas fill the available width */
     height: 1550px; /* Adjust the height based on your design */
 }
+=======
+>>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c

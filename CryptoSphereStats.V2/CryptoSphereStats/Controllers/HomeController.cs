@@ -13,7 +13,14 @@ namespace CryptoSphereStats.Controllers
         {
             _logger = logger;
         }
+<<<<<<< HEAD
     
+=======
+        public IActionResult Stats()
+        {
+            return View();
+        }
+>>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c
         public IActionResult Index()
         {
             return View();

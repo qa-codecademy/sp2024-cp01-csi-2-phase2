@@ -1,8 +1,13 @@
 {
   "ExpandedNodes": [
+<<<<<<< HEAD
     "",
     "\\CryptoSphereStats.V2"
   ],
   "SelectedNode": "\\CryptoSphereStats.V2\\CryptoSphereStats.sln",
+=======
+    ""
+  ],
+>>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c
   "PreviewInSolutionExplorer": false
 }

@@ -5,9 +5,15 @@ VisualStudioVersion = 17.7.34009.444
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoSphereStats", "CryptoSphereStats\CryptoSphereStats.csproj", "{713665F2-10F4-4C72-89A8-6108DA8DAD9B}"
 EndProject
+<<<<<<< HEAD
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoSphereStats.Domain", "CryptoSphereStats.Models\CryptoSphereStats.Domain.csproj", "{2117F041-081B-40CB-95E4-D857330D1FB2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoSphereStats.DataAccess", "CryptoSphereStats.DataAccess\CryptoSphereStats.DataAccess.csproj", "{862A6EFB-5E0F-4D5A-9DE4-8A02965BFE2E}"
+=======
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoSphereStats.Domain", "CryptoSphereStats.Models\CryptoSphereStats.Domain.csproj", "{2117F041-081B-40CB-95E4-D857330D1FB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoSphereStats.DataAccess", "CryptoSphereStats.DataAccess\CryptoSphereStats.DataAccess.csproj", "{862A6EFB-5E0F-4D5A-9DE4-8A02965BFE2E}"
+>>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

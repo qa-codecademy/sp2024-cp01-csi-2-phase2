@@ -53,6 +53,7 @@
     <ProjectReference Include="..\CryptoSphereStats.Models\CryptoSphereStats.Domain.csproj" />
   </ItemGroup>
 
+<<<<<<< HEAD
   <ItemGroup>
     <Content Update="wwwroot\js\DataChart.js">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
@@ -60,4 +61,6 @@
     </Content>
   </ItemGroup>
 
+=======
+>>>>>>> 968e6216e24e66284d61d01123721a6cc1b00e1c
 </Project>
