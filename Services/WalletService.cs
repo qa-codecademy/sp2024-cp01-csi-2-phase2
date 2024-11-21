@@ -5,6 +5,7 @@ using CryptoWalletAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
+using System.Text.Json;
 
 
 namespace CryptoWalletAPI.Services
@@ -135,7 +136,7 @@ namespace CryptoWalletAPI.Services
 
                 var content = await response.Content.ReadAsStringAsync();
 
-                // Parse the response assuming "data" is an array
+                
                 var json = JObject.Parse(content);
                 var crypto = json["data"]?.FirstOrDefault(c => c["symbol"]?.ToString() == symbol);
 
@@ -148,7 +149,7 @@ namespace CryptoWalletAPI.Services
                     };
                 }
 
-                // Parse price_usd as decimal
+
                 if (decimal.TryParse(crypto["price_usd"]?.ToString(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var priceUsd))
                 {
                     return new Result<decimal>(priceUsd)
@@ -283,6 +284,84 @@ namespace CryptoWalletAPI.Services
             }
 
         }
+        public async Task<List<CryptoData>> GetCryptoDataAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("https://api.coinlore.net/api/tickers/");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("Failed to fetch data from the API.");
+                    return new List<CryptoData>();
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                if (string.IsNullOrWhiteSpace(content))
+                {
+                    Console.WriteLine("Received empty response from API.");
+                    return new List<CryptoData>();
+                }
+
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var data = JsonSerializer.Deserialize<CryptoApiResponse>(content, options);
+
+                if (data == null || data.Data == null)
+                {
+                    Console.WriteLine("Deserialization failed.");
+                    return new List<CryptoData>();
+                }
+
+                foreach (var crypto in data.Data)
+                {
+                    if (decimal.TryParse(crypto.PriceUSD, NumberStyles.Any, CultureInfo.InvariantCulture, out var priceUsd))
+                    {
+                        crypto.PriceUSD = priceUsd.ToString(); 
+                    }
+                    else
+                    {
+                        crypto.PriceUSD = "0"; 
+                    }
+
+                    if (decimal.TryParse(crypto.PercentChange1h, NumberStyles.Any, CultureInfo.InvariantCulture, out var percentChange1h))
+                    {
+                        crypto.PercentChange1h = percentChange1h.ToString();
+                    }
+                    else
+                    {
+                        crypto.PercentChange1h = "0";
+                    }
+
+                    if (decimal.TryParse(crypto.PercentChange24h, NumberStyles.Any, CultureInfo.InvariantCulture, out var percentChange24h))
+                    {
+                        crypto.PercentChange24h = percentChange24h.ToString();
+                    }
+                    else
+                    {
+                        crypto.PercentChange24h = "0";
+                    }
+
+                    if (decimal.TryParse(crypto.PercentChange7d, NumberStyles.Any, CultureInfo.InvariantCulture, out var percentChange7d))
+                    {
+                        crypto.PercentChange7d = percentChange7d.ToString();
+                    }
+                    else
+                    {
+                        crypto.PercentChange7d = "0";
+                    }
+                }
+                return data.Data;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return new List<CryptoData>();
+            }
+        }
+
+
+
+
 
     }
 }

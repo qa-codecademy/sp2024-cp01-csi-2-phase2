@@ -1,13 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+﻿using CryptoWalletAPI.Controllers;
+using CryptoWalletAPI.Data;
 using CryptoWalletAPI.DTOs;
 using CryptoWalletAPI.Services;
-using System.Threading.Tasks;
-using System.Security.Claims;
-using CryptoWalletAPI.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CryptoWalletAPI.Controllers;
-using CryptoWalletAPI.Helpers;
+using System.Security.Claims;
 
 [ApiController]
 [Route("api/[controller]")]
